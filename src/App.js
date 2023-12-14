@@ -3,65 +3,54 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
-const TomatoGame = () => {
-  // State variables
-  const [imageUrl, setImageUrl] = useState(""); // Stores the URL of the tomato image
-  const [solution, setSolution] = useState(""); // Stores the correct solution
-  const [guess, setGuess] = useState(""); // Stores the user's guess
-  const [isCorrect, setIsCorrect] = useState(false); // Tracks if the user's guess is correct
-  const [score, setScore] = useState(0); // Tracks the user's score
-  const [timer, setTimer] = useState(30); // 30 seconds countdown timer
-  const [showAnswer, setShowAnswer] = useState(false); // Tracks if the answer should be shown
+const API_URL = "https://marcconrad.com/uob/tomato/api.php?out=json";
 
-  // Fetches the game data from the API
+const TomatoGame = () => {
+  const [gameData, setGameData] = useState({ imageUrl: "", solution: "" });
+  const [guess, setGuess] = useState("");
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [hint, setHint] = useState("");
+
+  // Fetches the game data from the API when the component mounts
   useEffect(() => {
-    fetchData();
-    const countdown = setInterval(() => {
-      setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
-    }, 1000);
-    return () => clearInterval(countdown);
+    fetchGameData();
   }, []);
 
+  // Handles the countdown timer
   useEffect(() => {
-    if (timer === 0 && !isCorrect) {
-      toast.error("Time is up! Moving to next question.", {
-        position: toast.POSITION.TOP_CENTER,
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-      });
-      fetchData();
+    if (!timeLeft) {
+      fetchGameData();
+      setScore(0);
+      return;
     }
-  }, [timer, isCorrect]);
+    const timerId = setInterval(() => setTimeLeft(timeLeft - 1), 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft]);
 
-  const fetchData = async () => {
+  const fetchGameData = async () => {
     try {
-      const response = await fetch(
-        "https://marcconrad.com/uob/tomato/api.php?out=json"
-      );
+      const response = await fetch(API_URL);
       const data = await response.json();
-      setImageUrl(data.question); // Sets the image URL received from the API
-      setSolution(data.solution); // Sets the correct solution received from the API
-      setIsCorrect(false); // Resets the isCorrect state to false
-      setTimer(30); // Resets the timer
-      setShowAnswer(false); // Resets the showAnswer state
+      setGameData({ imageUrl: data.question, solution: data.solution });
+      setIsCorrect(false);
+      setTimeLeft(30);
     } catch (error) {
       console.error("Error fetching game data:", error);
     }
   };
 
-  // Handles the user's guess
   const handleGuess = () => {
-    const parsedGuess = parseInt(guess, 10);
-    if (parsedGuess === solution) {
+    if (parseInt(guess, 10) === gameData.solution) {
       toast.success("YOU GUESSED CORRECTLY!", {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 3000,
         hideProgressBar: true,
         closeOnClick: true,
       });
-      setIsCorrect(true); // Sets isCorrect state to true
-      setScore(score + 1); // Increases the score by 1
+      setIsCorrect(true);
+      setScore(score + 1);
     } else {
       toast.error("WRONG ANSWER, TRY AGAIN", {
         position: toast.POSITION.TOP_CENTER,
@@ -72,23 +61,25 @@ const TomatoGame = () => {
     }
   };
 
-  // Handles the next level button click
   const handleNextLevel = () => {
-    fetchData(); // Fetches new game data for the next level
-    setGuess(""); // Resets the guess state
+    fetchGameData();
+    setGuess("");
+    setHint(""); // Reset the hint
   };
 
-  // Handles the show answer button click
-  const handleShowAnswer = () => {
-    setShowAnswer(true); // Sets showAnswer state to true
+  const handleHint = () => {
+    const randomNum1 = Math.floor(Math.random() * 10);
+    const randomNum2 = Math.floor(Math.random() * 10);
+    const hintOptions = [gameData.solution, randomNum1, randomNum2];
+    setHint(`The correct answer is one of these: ${hintOptions.join(", ")}`);
   };
 
   return (
     <div className="container">
       <h1>The Tomato Game</h1>
-      <p>Score: {score}</p>
-      <p>Time left: {timer} seconds</p>
-      <img src={imageUrl} alt="Tomato Game" />
+      <h2>Score: {score}</h2>
+      <h2>Time left: {timeLeft}</h2>
+      <img src={gameData.imageUrl} alt="Tomato Game" />
       <div className="label-input-button-container">
         <label htmlFor="guessInput">Enter the missing digit:</label>
         <input
@@ -100,8 +91,8 @@ const TomatoGame = () => {
         <button onClick={handleGuess}>Enter</button>
       </div>
       {isCorrect && <button onClick={handleNextLevel}>Next Level</button>}
-      {!isCorrect && <button onClick={handleShowAnswer}>Show Answer</button>}
-      {showAnswer && !isCorrect && <p>The correct answer is: {solution}</p>}
+      <button onClick={handleHint}>Get Hint</button>
+      <p>{hint}</p>
       <ToastContainer />
     </div>
   );

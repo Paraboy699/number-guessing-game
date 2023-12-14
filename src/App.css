@@ -1,38 +1,128 @@
-.App {
+body {
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(
+    135deg,
+    #ff5252,
+    #ff6b6b,
+    #b91d73,
+    #6a1b9a,
+    #303f9f
+  );
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.container {
   text-align: center;
+  background: linear-gradient(45deg, #ff6347, #ff8c69);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  animation: bounceIn 1s ease-in-out;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@keyframes bounceIn {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+h1 {
+  color: #d32f2f;
+  font-size: 2em;
+  letter-spacing: 3px;
+}
+
+h2 {
+  color: #388e3c;
+  font-size: 1.5em;
+  margin: 10px 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 20px;
+  margin: 20px 0;
+  transition: transform 0.3s ease-in-out;
+}
+
+img:hover {
+  transform: scale(1.1);
+}
+
+.label-input-button-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  margin-top: 20px;
 }
 
-.App-link {
-  color: #61dafb;
+label {
+  color: #4caf50;
+  font-size: 1.2em;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+input {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 3px solid #e57373;
+  border-radius: 15px;
+  outline: none;
+  font-size: 1.2em;
+  color: #fff;
+  background: linear-gradient(45deg, #e57373, #d32f2f);
+  transition: transform 0.3s ease-in-out;
+}
+
+input:focus {
+  transform: scale(1.02);
+}
+
+button {
+  padding: 15px 30px;
+  margin: 10px;
+  background: linear-gradient(45deg, #4caf50, #388e3c);
+  color: #ffffff;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 1.2em;
+  letter-spacing: 1px;
+  transition: background 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+button:hover {
+  background: linear-gradient(45deg, #388e3c, #4caf50);
+  transform: scale(1.02);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.Toastify__toast-container {
+  z-index: 9999;
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(45deg, #4caf50, #8bc34a);
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(45deg, #f44336, #e91e63);
+}
+
+.Toastify__toast--info {
+  background: linear-gradient(45deg, #2196f3, #03a9f4);
 }
